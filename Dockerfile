@@ -18,4 +18,4 @@ ADD runner.sh /usr/local/bin/
 
 RUN chmod 775 /usr/local/bin/runner.sh
 
-CMD /usr/local/bin/runner.sh
+CMD ["/usr/local/bin/runner.sh"]

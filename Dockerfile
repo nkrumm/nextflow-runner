@@ -12,6 +12,7 @@ RUN apk -v --update add \
     apk -v --purge del py-pip && \
     rm /var/cache/apk/*
 
+RUN apk add curl jq
 
 ADD runner.sh /usr/local/bin/
 

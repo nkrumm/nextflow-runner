@@ -3,4 +3,4 @@
 aws s3 cp $1 .
 aws s3 cp $2 .
 
-nextflow run $1 -config $2
+nextflow run main.nf -config nextflow.config

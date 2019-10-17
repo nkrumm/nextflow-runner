@@ -2,26 +2,39 @@
 set -e  # fail on any error
 
 echo "== Configuruation =="
+TASK_ARN=$(curl --silent ${ECS_CONTAINER_METADATA_URI}/task | jq -r ‘.TaskARN’ | awk -F ‘task/’ ‘{print $2}’)
+WEBLOG_ENDPOINT=“${BATCHMAN_LOG_ENDPOINT}&taskArn=${TASK_ARN}”
+
 echo $AWS_ACCESS_KEY_ID
-echo $BATCHMAN_LOG_ENDPOINT
-echo $NF_SESSION_CACHE_DIR_IN # this is passed in if a restart is desired
+echo $TASK_ARN
+echo $WEBLOG_ENDPOINT
+
+if [ -z "$NF_SESSION_CACHE_ARN" ]; then
+	echo "NF_SESSION_CACHE_ARN is set, will attempt -resume"
+	NF_SESSION_CACHE_DIR_IN="${NF_SESSION_CACHE_DIR}/${NF_SESSION_CACHE_ARN}"
+	echo $NF_SESSION_CACHE_DIR_IN
+fi
+# this needs to be set regardless, to save current workflow .nextflow/
+NF_SESSION_CACHE_DIR_OUT="${NF_SESSION_CACHE_DIR}/${TASK_ARN}"
 echo $NF_SESSION_CACHE_DIR_OUT # this is a new directory based on current ARN
+
 echo $NEXTFLOW_OPTIONS
 
 echo "== Downloading Script and Config =="
 aws s3 cp $1 .
 aws s3 cp $2 .
 
-echo "== Restoring Session Cache =="
 # stage in session cache
 # .nextflow directory holds all session information for the current and past runs.
 # We separately store .nextflow/ directories by the Fargate Task ARN, which means
 # that restarts can be identified by the prior Task ARN.
-# TODO: should this be the Task ARN or a more constant identifier?
 # it should be `sync`'d with an s3 uri, so that runs from previous sessions can be 
 # resumed
 # taken from https://docs.opendata.aws/genomics-workflows/orchestration/nextflow/nextflow-overview/
-aws s3 sync --only-show-errors $NF_SESSION_CACHE_DIR_IN/.nextflow .nextflow
+if [ -z "$NF_SESSION_CACHE_DIR_IN" ]; then
+	echo "== Restoring Session Cache =="
+	aws s3 sync --only-show-errors $NF_SESSION_CACHE_DIR_IN/.nextflow .nextflow
+fi
 
 function preserve_session() {
     # stage out session cache
@@ -34,5 +47,5 @@ function preserve_session() {
 trap preserve_session EXIT
 
 echo "== Start Nextflow =="
-echo "nextflow run main.nf -config nextflow.config -with-weblog $BATCHMAN_LOG_ENDPOINT $NEXTFLOW_OPTIONS"
-nextflow run main.nf -config nextflow.config -with-weblog $BATCHMAN_LOG_ENDPOINT $NEXTFLOW_OPTIONS
+echo "nextflow run main.nf -config nextflow.config -with-weblog $WEBLOG_ENDPOINT $NEXTFLOW_OPTIONS"
+nextflow run main.nf -config nextflow.config  -with-weblog $WEBLOG_ENDPOINT $NEXTFLOW_OPTIONS

@@ -2,8 +2,8 @@
 set -e  # fail on any error
 
 echo "== Configuruation =="
-TASK_ARN=$(curl --silent ${ECS_CONTAINER_METADATA_URI}/task | jq -r ‘.TaskARN’ | awk -F ‘task/’ ‘{print $2}’)
-WEBLOG_ENDPOINT=“${BATCHMAN_LOG_ENDPOINT}&taskArn=${TASK_ARN}”
+TASK_ARN=$(curl --silent ${ECS_CONTAINER_METADATA_URI}/task | jq -r '.TaskARN' | awk -F 'task/' '{print $2}')
+WEBLOG_ENDPOINT="${BATCHMAN_LOG_ENDPOINT}&taskArn=${TASK_ARN}"
 
 echo $AWS_ACCESS_KEY_ID
 echo $TASK_ARN

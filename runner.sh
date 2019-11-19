@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e  # fail on any error
 
-echo "== Configuruation =="
+echo "== Configuration =="
 TASK_ARN=$(curl --silent ${ECS_CONTAINER_METADATA_URI}/task | jq -r '.TaskARN' | awk -F 'task/' '{print $2}')
 WEBLOG_ENDPOINT="${BATCHMAN_LOG_ENDPOINT}&taskArn=${TASK_ARN}"
 
@@ -38,8 +38,10 @@ fi
 function preserve_session() {
     # stage out session cache
     if [ -d .nextflow ]; then
+        echo "== SIGTERM received =="
         echo "== Preserving Session Cache =="
         aws s3 sync --only-show-errors .nextflow $NF_SESSION_CACHE_DIR_OUT/.nextflow
+        echo "== Done =="
     fi
 }
 
@@ -47,4 +49,7 @@ trap preserve_session EXIT
 
 echo "== Start Nextflow =="
 echo "nextflow run main.nf -config nextflow.config -with-weblog $WEBLOG_ENDPOINT $NEXTFLOW_OPTIONS"
+# turn off ANSI logging for clarity
+export NXF_ANSI_LOG=false
 nextflow run main.nf -config nextflow.config  -with-weblog $WEBLOG_ENDPOINT $NEXTFLOW_OPTIONS
+echo "== Done =="

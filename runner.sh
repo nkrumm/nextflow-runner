@@ -3,11 +3,13 @@ set -e  # fail on any error
 
 echo "== Configuration =="
 TASK_ARN=$(curl --silent ${ECS_CONTAINER_METADATA_URI}/task | jq -r '.TaskARN' | awk -F 'task/' '{print $2}')
-WEBLOG_ENDPOINT="${BATCHMAN_LOG_ENDPOINT}&taskArn=${TASK_ARN}"
+WEBLOG_ENDPOINT="${API_ENDPOINT}/api/external/weblog?key=${API_KEY}&taskArn=${TASK_ARN}"
 
-echo $AWS_ACCESS_KEY_ID
-echo $TASK_ARN
-echo $WEBLOG_ENDPOINT
+echo "AWS_ACCESS_KEY_ID = ${AWS_ACCESS_KEY_ID}"
+echo "API_ENDPOINT      = ${API_ENDPOINT}"
+echo "API_KEY           = ${API_KEY}"
+echo "TASK_ARN          = ${TASK_ARN}"
+echo "WEBLOG_ENDPOINT   = ${WEBLOG_ENDPOINT}"
 
 if [ ! -z "$NF_SESSION_CACHE_ARN" ]; then
 	NF_SESSION_CACHE_DIR_IN="${NF_SESSION_CACHE_DIR}/${NF_SESSION_CACHE_ARN}"

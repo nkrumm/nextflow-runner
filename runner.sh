@@ -9,10 +9,9 @@ echo $AWS_ACCESS_KEY_ID
 echo $TASK_ARN
 echo $WEBLOG_ENDPOINT
 
-if [ -z "$NF_SESSION_CACHE_ARN" ]; then
-	echo "NF_SESSION_CACHE_ARN is set, will attempt -resume"
+if [ ! -z "$NF_SESSION_CACHE_ARN" ]; then
 	NF_SESSION_CACHE_DIR_IN="${NF_SESSION_CACHE_DIR}/${NF_SESSION_CACHE_ARN}"
-	echo $NF_SESSION_CACHE_DIR_IN
+	echo "NF_SESSION_CACHE_ARN is set, will attempt -resume with cache from ${NF_SESSION_CACHE_DIR_IN}"
 fi
 # this needs to be set regardless, to save current workflow .nextflow/
 NF_SESSION_CACHE_DIR_OUT="${NF_SESSION_CACHE_DIR}/${TASK_ARN}"
@@ -31,7 +30,7 @@ aws s3 cp $2 .
 # it should be `sync`'d with an s3 uri, so that runs from previous sessions can be 
 # resumed
 # taken from https://docs.opendata.aws/genomics-workflows/orchestration/nextflow/nextflow-overview/
-if [ -z "$NF_SESSION_CACHE_DIR_IN" ]; then
+if [ ! -z "$NF_SESSION_CACHE_DIR_IN" ]; then
 	echo "== Restoring Session Cache =="
 	aws s3 sync --only-show-errors $NF_SESSION_CACHE_DIR_IN/.nextflow .nextflow
 fi

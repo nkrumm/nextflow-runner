@@ -1,4 +1,4 @@
-FROM nextflow/nextflow:19.07.0
+FROM 721970950229.dkr.ecr.us-west-2.amazonaws.com/nextflow:latest
 
 MAINTAINER Nik Krumm <nkrumm@uw.edu>
 

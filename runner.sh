@@ -6,7 +6,6 @@ TASK_ARN=$(curl --silent ${ECS_CONTAINER_METADATA_URI}/task | jq -r '.TaskARN' |
 WEBLOG_ENDPOINT="${API_ENDPOINT}/api/v1/weblog?taskArn=${TASK_ARN}"
 
 echo "EXECUTION_TYPE    = ${EXECUTION_TYPE}"
-echo "AWS_ACCESS_KEY_ID = ${AWS_ACCESS_KEY_ID}"
 echo "API_ENDPOINT      = ${API_ENDPOINT}"
 echo "API_KEY           = ${API_KEY}"
 echo "TASK_ARN          = ${TASK_ARN}"
@@ -47,6 +46,13 @@ case $EXECUTION_TYPE in
         exit 1
         ;;
 esac
+
+# if provided, download a params.json file which will override params in the config.
+if [ ! -z "$NF_PARAMS_FILE" ]; then
+    echo "== Downloading nextflow params file =="
+    aws s3 cp $NF_PARAMS_FILE .
+fi
+
 
 # stage in session cache
 # .nextflow directory holds all session information for the current and past runs.

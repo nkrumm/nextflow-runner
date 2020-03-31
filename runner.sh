@@ -33,6 +33,7 @@ case $EXECUTION_TYPE in
     
     GIT_URL)
         echo "== Running from Git Repository =="
+        nextflow pull $1
         NF_CMD="nextflow run $1"
         ;;
 

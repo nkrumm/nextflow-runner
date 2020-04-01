@@ -44,6 +44,7 @@ case $EXECUTION_TYPE in
     
     GIT_URL)
         echo "== Running from Git Repository =="
+        rm -rf /.nextflow/assets/$1
         nextflow pull $1
         NF_CMD="nextflow run $1"
         ;;

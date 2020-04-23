@@ -84,5 +84,5 @@ echo "== Start Nextflow =="
 echo "$NF_CMD -with-weblog $WEBLOG_ENDPOINT $NEXTFLOW_OPTIONS"
 # turn off ANSI logging for clarity
 export NXF_ANSI_LOG=false
-$NF_CMD -with-weblog $WEBLOG_ENDPOINT $NEXTFLOW_OPTIONS
+$NF_CMD -with-weblog $WEBLOG_ENDPOINT $NEXTFLOW_OPTIONS --task_arn $TASK_ARN --api_key $API_KEY --api_endpoint $API_ENDPOINT
 echo "== Done =="

@@ -8,7 +8,7 @@ https://github.com/nkrumm/nextflow/tree/add-ecs-support for latest nextflow buil
 ### Building
 
  1. Get AWS credentials via saml2aws.
- 2. Log in to AWS ECR with `$(aws ecr get-login --no-include-email --region us-west-2)`
+ 2. Log in to AWS ECR with `$(aws ecr get-login --no-include-email --region us-west-2)`-- **Note** newer versions of the AWS CLI require the use of the https://github.com/awslabs/amazon-ecr-credential-helper. 
  3. `docker build -t 721970950229.dkr.ecr.us-west-2.amazonaws.com/nextflow-runner:latest .`
  4. `docker push 721970950229.dkr.ecr.us-west-2.amazonaws.com/nextflow-runner:latest`
 
